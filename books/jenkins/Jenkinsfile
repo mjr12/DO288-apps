@@ -10,11 +10,10 @@ pipeline {
     }
 
     environment {
-        //TODO: Edit these vars as per your env
         DEV_PROJECT = "schdna-books-dev"
         STAGE_PROJECT = "schdna-books-stage"
         APP_GIT_URL = "https://github.com/mjr12/DO288-apps"
-        NEXUS_SERVER = "http://nexus-common.apps.eu45.prod.nextcle.com"
+        NEXUS_SERVER = "http://nexus-common.apps.eu45.prod.nextcle.com/repository/nodejs"
 
         // DO NOT CHANGE THE GLOBAL VARS BELOW THIS LINE
         APP_NAME = "books"
@@ -60,10 +59,7 @@ pipeline {
                 echo '### Creating a new app in DEV env ###'
                 sh '''
                         oc project ${DEV_PROJECT}
-                        oc new-app --as-deployment-config --name books nodejs:12~${APP_GIT_URL} \
-                         --build-env npm_config_registry=${NEXUS_SERVER} \
-                         --context-dir ${APP_NAME}
-
+                        oc new-app  --as-deployment-config --name books nodejs:12~${APP_GIT_URL} --build-env npm_config_registry=${NEXUS_SERVER} --context-dir ${APP_NAME}
                         oc expose svc/${APP_NAME}
                    '''
             }
@@ -146,7 +142,6 @@ pipeline {
                                 return (it.object().status.phase == "Running")
                             }
                         }
-
                         echo "Deployment to Staging env is complete. Access the app at the URL http://${routeHost}."
                     }
                 }
